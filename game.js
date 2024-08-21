@@ -3,8 +3,8 @@ import readlineSync from 'readline-sync';
 
 class Player {
   constructor() {
-    this.hp = 1000;
-    this.Attack = 100;
+    this.hp = 100;
+    this.Attack = 10;
   }
 
   attack() {
