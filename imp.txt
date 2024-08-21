@@ -1,0 +1,18 @@
+현재 구현한것
+class player , monster의 hp, Attack 
+stage가 올라갈때마다 monster 성장
+stage가 종료될때마다 player.hp 회복
+공격 기능, 도망치기 기능 구현
+monster 의 체력이 0이 됐을때 stage 종료
+player의 hp가 0이 됐을때 패배알림 , 다시 시작 기능 구현
+
+앞으로 구현 할 것?
+        |연속 공격, 방어, 도망치기 
+확률넣기 |스테이지 클리어시 유저 능력치 증가, 증가량 구현
+        |몬스터의 공격력 체력 증가량
+
+복잡한 행동패턴 구현 
+연속 공격, 방어하기, 그 외 행동
+
+Math.random()메서드 이용하기
+class 안에 method 구현하기
