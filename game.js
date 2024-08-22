@@ -7,7 +7,7 @@ function displayStatus(stage, player, monster) {
   console.log(
     chalk.cyanBright(`| Stage: ${stage} `) +
     chalk.blueBright(
-      `| 플레이어 정보 HP: ${player.hp} Attack: ${player.Attack} `,
+      `| 플레이어 정보 HP: ${player.hp} Attack: ${player.minAttack}-${player.maxAttack} `,
     ) +
     chalk.redBright(
       `| 몬스터 정보 HP: ${monster.hp} Attack: ${monster.Attack} `,
@@ -28,7 +28,8 @@ const battle = async (stage, player, monster) => {
     const hppp = Math.floor(Math.random() * (51 - 5)) + 5;
     player.hp += hppp;
     const atpp = Math.floor(Math.random() * (11 - 1)) + 1;
-    player.Attack += atpp;
+    player.maxAttack += atpp;
+    player.minAttack += atpp;
     logs.push(chalk.greenBright(`플레이어의 체력이 ${hppp}, 공격력이 ${atpp}만큼 상승하셨습니다.`));
   }
 

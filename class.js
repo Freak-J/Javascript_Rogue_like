@@ -3,7 +3,8 @@ import chalk from 'chalk';
 export class Player {
     constructor() {
         this.hp = 200;
-        this.Attack = 15;
+        this.maxAttack = 15;
+        this.minAttack = 10;
     }
 
     // player 피해
@@ -13,16 +14,18 @@ export class Player {
 
     // 플레이어의 공격
     attack(player, monster, logs, count) {
-        monster.takedamage(player);
-        logs.push(chalk.greenBright(`[${count}] 몬스터에게 ${player.Attack}의 피해를 입혔습니다.`));
+        const damage = Math.floor(Math.random()*(this.maxAttack - this.minAttack + 1) + this.minAttack);
+        monster.takedamage(damage);
+        logs.push(chalk.greenBright(`[${count}] 몬스터에게 ${damage}의 피해를 입혔습니다.`));
     }
 
     // 연속공격
     doubleAtk(player, monster, logs, count) {
-        monster.takedamage(player);
-        monster.takedamage(player);
+        const damage = Math.floor(Math.random()*(this.maxAttack - this.minAttack + 1) + this.minAttack);
+        monster.takedamage(damage);
+        monster.takedamage(damage);
         logs.push(chalk.greenBright(`[${count}] 연속공격 성공 !!`));
-        logs.push(chalk.greenBright(`[${count}] 몬스터에게 ${player.Attack * 2}의 피해를 입혔습니다.`));
+        logs.push(chalk.greenBright(`[${count}] 몬스터에게 ${damage * 2}의 피해를 입혔습니다.`));
     }
 
     // 방어
@@ -36,7 +39,7 @@ export class Player {
         const drainhp = Math.floor(Math.random() * (31 - 5)) + 5;
         const drainat = Math.floor(Math.random() * (6 - 1)) + 1;
         player.hp += drainhp;
-        player.Attack += drainat;
+        player.maxAttack += drainat;
         monster.hp -= drainhp;
         monster.Attack -= drainat;
         logs.push(chalk.greenBright(`[${count}] 상대의 체력을 ${drainhp}, 공격력을 ${drainat}만큼 흡수하셨습니다!`));
@@ -49,8 +52,8 @@ export class Monster {
         this.Attack = 3 + (stage * 2) + (random * 1);
     }
 
-    takedamage(player) {
-        this.hp -= player.Attack;
+    takedamage(damage) {
+        this.hp -= damage;
     }
 
     // 몬스터의 공격
