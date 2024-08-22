@@ -1,78 +1,6 @@
 import chalk from 'chalk';
 import readlineSync from 'readline-sync';
-
-class Player {
-  constructor() {
-    this.hp = 200;
-    this.Attack = 15;
-  }
-
-  // player 피해
-  takedamage(monster) {
-    this.hp -= monster.Attack;
-  }
-
-  // 플레이어의 공격
-  attack(player, monster, logs, count) {
-    monster.takedamage(player);
-    logs.push(chalk.greenBright(`[${count}] 몬스터에게 ${player.Attack}의 피해를 입혔습니다.`));
-  }
-
-  // 연속공격
-  doubleAtk(player, monster, logs, count) {
-    monster.takedamage(player);
-    monster.takedamage(player);
-    logs.push(chalk.greenBright(`[${count}] 연속공격 성공 !!`));
-    logs.push(chalk.greenBright(`[${count}] 몬스터에게 ${player.Attack * 2}의 피해를 입혔습니다.`));
-  }
-
-  // 방어
-  defense(player, monster, logs, count) {
-    logs.push(chalk.greenBright(`[${count}] 방어 성공!!`));
-    this.attack(player, monster, logs, count);
-  }
-
-  // 흡성대법
-  Drain_Life(player, monster, logs, count) {
-    const drainhp = Math.floor(Math.random() * (31 - 5)) + 5;
-    const drainat = Math.floor(Math.random() * (5 - 1)) + 1;
-    player.hp += drainhp;
-    player.Attack += drainat;
-    monster.hp -= drainhp;
-    monster.Attack -= drainat;
-    logs.push(chalk.greenBright(`[${count}] 상대의 체력을 ${drainhp}, 공격력을 ${drainat}만큼 흡수하셨습니다!`));
-  }
-}
-
-class Monster {
-  constructor(stage, random) {
-    this.hp = 100 + (stage * 10) + (random * 5);
-    this.Attack = 3 + (stage * 2) + (random * 1);
-  }
-
-  takedamage(player) {
-    this.hp -= player.Attack;
-  }
-
-  // 몬스터의 공격
-  attack(player, monster, logs, count) {
-    const random = Math.floor(Math.random() * 10 + 1);
-    if (random === 1) {
-      this.doubleAtk(player, monster, logs, count);
-    } else {
-      player.takedamage(monster);
-      logs.push(chalk.red(`[${count}] 몬스터에게 ${monster.Attack}의 피해를 입었습니다.`))
-    }
-
-  }
-
-  doubleAtk(player, monster, logs, count) {
-    player.takedamage(monster);
-    player.takedamage(monster);
-    logs.push(chalk.red(`[${count}] 더블어택 !! 몬스터에게 ${monster.Attack * 2}의 피해를 입었습니다.`))
-  }
-
-}
+import { Player, Monster } from './class.js';
 
 function displayStatus(stage, player, monster) {
   console.log(chalk.magentaBright(`\n=== Current Status ===`));
@@ -110,6 +38,10 @@ const battle = async (stage, player, monster) => {
 
     logs.forEach((log) => console.log(log));
 
+    // 몬스터의 체력이 0이 됐을때 battle 종료
+    if (monster.hp <= 0) {
+      return 0;
+    }
     console.log(
       chalk.green(
         `\n1. 공격한다 | 2. 연속공격(50%) | 3. 방어(40%) | 4. 흡성대법(20%) | 5. 도망치기.(10%) | `,
@@ -147,14 +79,20 @@ const battle = async (stage, player, monster) => {
         break;
 
       case '4': // 흡성대법(20%)
-        if (random >= 1 && random <= 2) {
-          player.Drain_Life(player, monster, logs, count);
-          monster.attack(player, monster, logs, count);
+        if(monster.Attack > 5){
+          if (random >= 1 && random <= 2) {
+            player.Drain_Life(player, monster, logs, count);
+            monster.attack(player, monster, logs, count);
+          } else {
+            logs.push(chalk.red(`흡성대법에 실패하셨습니다..`));
+            monster.attack(player, monster, logs, count);
+          } 
         } else {
-          logs.push(chalk.red(`흡성대법에 실패하셨습니다..`));
+          logs.push(chalk.red(`더 이상 흡수할 수 없습니다!!!`));
           monster.attack(player, monster, logs, count);
-        } break;
-        
+        }
+        break;
+
       case '5': // 도망친다(10%)
         if (random === 1) {
           return 0;
@@ -163,10 +101,6 @@ const battle = async (stage, player, monster) => {
           monster.attack(player, monster, logs, count);
           break;
         }
-    }
-    // 몬스터의 체력이 0이 됐을때 battle 종료
-    if (monster.hp <= 0) {
-      return 0;
     }
     // 턴 count
     count++
@@ -197,7 +131,7 @@ export async function startGame() {
           return 0;
       }
     }
-    
+
     stage++;
 
     // 10stage의 monster의 체력이 0이 됐을때 게임 클리어
